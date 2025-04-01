@@ -1,0 +1,6 @@
+pluginManagement {
+    repositories {
+        maven { url "https://abis.ahnlab.com/artifactory/gradle-repos" }
+    }
+}
+rootProject.name = 'mysql-server'
