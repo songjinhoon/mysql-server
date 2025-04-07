@@ -11,6 +11,7 @@ import org.springframework.util.StopWatch;
 import java.time.LocalDate;
 import java.util.stream.IntStream;
 
+//@Transactional
 @SpringBootTest
 public class PostBulkInsertTest {
 
@@ -21,14 +22,14 @@ public class PostBulkInsertTest {
     public void bulkInsert() {
         var easyRandom = PostFixtureFactory.get(
                 3L,
-                LocalDate.of(2024, 4, 1),
-                LocalDate.of(2024, 4, 30));
+                LocalDate.of(2025, 1, 1),
+                LocalDate.of(2025, 1, 31));
 
         var stopWatch = new StopWatch();
         var queryStopWatch = new StopWatch();
 
         stopWatch.start();
-        var posts = IntStream.range(0, 10000 * 100)
+        var posts = IntStream.range(0, 10000 * 300)
                 .parallel()
                 .mapToObj(i -> easyRandom.nextObject(Post.class))
                 .toList();
