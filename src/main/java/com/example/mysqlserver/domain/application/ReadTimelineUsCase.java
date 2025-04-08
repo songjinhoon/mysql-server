@@ -17,7 +17,7 @@ public class ReadTimelineUsCase {
     private final PostReadService postReadService;
 
     public PageCursor<?> execute(Long memberId, CursorRequest cursorRequest) {
-        var follows = followReadService.read(memberId);
+        var follows = followReadService.findAllByFromMemberId(memberId);
         var memberIds = follows.stream().map(Follow::getToMemberId).toList();
         return postReadService.getPosts(memberIds, cursorRequest);
     }

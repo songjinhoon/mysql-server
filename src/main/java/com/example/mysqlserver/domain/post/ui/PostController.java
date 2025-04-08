@@ -1,5 +1,6 @@
 package com.example.mysqlserver.domain.post.ui;
 
+import com.example.mysqlserver.domain.application.CreatePostUseCase;
 import com.example.mysqlserver.domain.application.ReadTimelineUsCase;
 import com.example.mysqlserver.domain.follow.application.FollowReadService;
 import com.example.mysqlserver.domain.post.application.PostCreateService;
@@ -20,7 +21,9 @@ import java.util.List;
 @RestController
 public class PostController {
 
-    private final PostCreateService postCreateService;
+//    private final PostCreateService postCreateService;
+
+    private final CreatePostUseCase createPostUseCase;
 
     private final PostReadService postReadService;
 
@@ -28,7 +31,7 @@ public class PostController {
 
     @PostMapping
     public Long create(@RequestBody PostCreateCommand postCreateCommand) {
-        return postCreateService.create(postCreateCommand);
+        return createPostUseCase.execute(postCreateCommand);
     }
 
     @GetMapping

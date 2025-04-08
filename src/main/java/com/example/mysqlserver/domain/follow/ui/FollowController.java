@@ -2,7 +2,6 @@ package com.example.mysqlserver.domain.follow.ui;
 
 import com.example.mysqlserver.domain.application.CreateFollowMemberUseCase;
 import com.example.mysqlserver.domain.application.ReadFollowMemberUseCase;
-import com.example.mysqlserver.domain.member.dto.MemberDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

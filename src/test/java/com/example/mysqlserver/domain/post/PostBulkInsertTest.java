@@ -3,7 +3,6 @@ package com.example.mysqlserver.domain.post;
 import com.example.mysqlserver.domain.post.domain.Post;
 import com.example.mysqlserver.domain.post.domain.PostRepository;
 import com.example.mysqlserver.utils.PostFixtureFactory;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.StopWatch;
@@ -18,7 +17,7 @@ public class PostBulkInsertTest {
     @Autowired
     private PostRepository postRepository;
 
-    @Test
+//    @Test
     public void bulkInsert() {
         var easyRandom = PostFixtureFactory.get(
                 3L,

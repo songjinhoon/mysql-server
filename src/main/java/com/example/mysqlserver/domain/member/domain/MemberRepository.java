@@ -32,7 +32,7 @@ public class MemberRepository {
 
     public Optional<Member> findById(Long id) {
         var sql = String.format("SELECT * FROM %s WHERE id = :id", TABLE);
-        MapSqlParameterSource param = new MapSqlParameterSource().addValue("id", id);
+        var param = new MapSqlParameterSource().addValue("id", id);
         var member = namedParameterJdbcTemplate.queryForObject(sql, param, ROW_MAPPER);
         return Optional.ofNullable(member);
     }

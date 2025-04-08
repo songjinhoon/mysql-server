@@ -1,5 +1,6 @@
 package com.example.mysqlserver.domain.follow.domain;
 
+import com.example.mysqlserver.domain.timeline.domain.Timeline;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -32,7 +33,6 @@ public class FollowRepository {
         var params = new MapSqlParameterSource().addValue("fromMemberId", fromMemberId);
         return namedParameterJdbcTemplate.query(sql, params, ROW_MAPPER);
     }
-
 
     public Follow save(Follow follow) {
         if (follow.getId() == null) {
