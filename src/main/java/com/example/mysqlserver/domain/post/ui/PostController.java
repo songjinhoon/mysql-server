@@ -1,5 +1,7 @@
 package com.example.mysqlserver.domain.post.ui;
 
+import com.example.mysqlserver.domain.application.ReadTimelineUsCase;
+import com.example.mysqlserver.domain.follow.application.FollowReadService;
 import com.example.mysqlserver.domain.post.application.PostCreateService;
 import com.example.mysqlserver.domain.post.application.PostReadService;
 import com.example.mysqlserver.domain.post.dto.DailyPostCountRequest;
@@ -22,6 +24,8 @@ public class PostController {
 
     private final PostReadService postReadService;
 
+    private final ReadTimelineUsCase readTimelineUsCase;
+
     @PostMapping
     public Long create(@RequestBody PostCreateCommand postCreateCommand) {
         return postCreateService.create(postCreateCommand);
@@ -40,6 +44,11 @@ public class PostController {
     @GetMapping("/daily-post-counts")
     public List<?> read(DailyPostCountRequest dailyPostCountRequest) {
         return postReadService.getDailyPostCount(dailyPostCountRequest);
+    }
+
+    @GetMapping("/members/{memberId}/timeline")
+    public PageCursor<?> read(@PathVariable Long memberId, CursorRequest cursorRequest) {
+        return readTimelineUsCase.execute(memberId, cursorRequest);
     }
 
 }
