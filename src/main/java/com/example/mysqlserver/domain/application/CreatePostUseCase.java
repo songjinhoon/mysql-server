@@ -20,8 +20,8 @@ public class CreatePostUseCase {
 
     public Long execute(PostCreateCommand postCreateCommand) {
         var postId = postCreateService.create(postCreateCommand);
-        var toMemberIds = followReadService.findAllByFromMemberId(postCreateCommand.memberId()).stream().map(Follow::getToMemberId).toList();
-        timelineCreateService.create(postId, toMemberIds);
+        var fromMemberIds = followReadService.getFollower(postCreateCommand.memberId()).stream().map(Follow::getFromMemberId).toList();
+        timelineCreateService.create(postId, fromMemberIds);
         return postId;
     }
 

@@ -51,7 +51,8 @@ public class PostController {
 
     @GetMapping("/members/{memberId}/timeline")
     public PageCursor<?> read(@PathVariable Long memberId, CursorRequest cursorRequest) {
-        return readTimelineUsCase.execute(memberId, cursorRequest);
+//        return readTimelineUsCase.execute(memberId, cursorRequest);
+        return readTimelineUsCase.executeTimeline(memberId, cursorRequest);
     }
 
 }

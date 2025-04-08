@@ -18,7 +18,7 @@ public class ReadFollowMemberUseCase {
     private final FollowReadService fowFollowReadService;
 
     public List<MemberDto> execute(Long memberId) {
-        var follows = fowFollowReadService.findAllByFromMemberId(memberId);
+        var follows = fowFollowReadService.getFollowing(memberId);
         var toMemberIds = follows.stream().map(Follow::getToMemberId).toList();
         return memberReadService.read(toMemberIds);
     }

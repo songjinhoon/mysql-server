@@ -20,6 +20,10 @@ public class PostReadService {
 
     private final PostRepository postRepository;
 
+    public List<Post> findAllByIdIn(List<Long> ids) {
+        return postRepository.findAllByIdIn(ids);
+    }
+
     public List<DailyPostCountResponse> getDailyPostCount(DailyPostCountRequest dailyPostCountRequest) {
         return postRepository.groupByCratedDate(dailyPostCountRequest);
     }
