@@ -7,6 +7,7 @@ import com.example.mysqlserver.domain.member.domain.MemberRepository;
 import com.example.mysqlserver.domain.member.dto.MemberCreateCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -18,6 +19,7 @@ public class MemberCreateService {
 
     private final MemberNicknameHistoryRepository memberNicknameHistoryRepository;
 
+    @Transactional
     public Member create(MemberCreateCommand memberCreateCommand) {
         var member = Member.builder()
                 .nickname(memberCreateCommand.nickname())
@@ -30,6 +32,7 @@ public class MemberCreateService {
         return newMember;
     }
 
+    @Transactional
     public void updateNickname(Long id, String nickname) {
         Member member = memberRepository.findById(id).orElseThrow();
         member.updateNickname(nickname);

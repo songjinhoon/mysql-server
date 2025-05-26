@@ -1,9 +1,11 @@
 package com.example.mysqlserver.domain.post.application;
 
 import com.example.mysqlserver.domain.post.domain.Post;
+import com.example.mysqlserver.domain.post.domain.PostLikeRepository;
 import com.example.mysqlserver.domain.post.domain.PostRepository;
 import com.example.mysqlserver.domain.post.dto.DailyPostCountRequest;
 import com.example.mysqlserver.domain.post.dto.DailyPostCountResponse;
+import com.example.mysqlserver.domain.post.dto.PostDto;
 import com.example.mysqlserver.domain.post.ui.PostQueryDto;
 import com.example.mysqlserver.util.CursorRequest;
 import com.example.mysqlserver.util.PageCursor;
@@ -20,16 +22,22 @@ public class PostReadService {
 
     private final PostRepository postRepository;
 
+    private final PostLikeRepository postLikeRepository;
+
+    public Post read(Long id) {
+        return postRepository.findById(id, false).orElseThrow();
+    }
+
+    public Page<?> query(Pageable pageRequest, PostQueryDto postQueryDto) {
+        return postRepository.findAllByMemberId(pageRequest, postQueryDto).map(this::toDto);
+    }
+
     public List<Post> findAllByIdIn(List<Long> ids) {
         return postRepository.findAllByIdIn(ids);
     }
 
     public List<DailyPostCountResponse> getDailyPostCount(DailyPostCountRequest dailyPostCountRequest) {
         return postRepository.groupByCratedDate(dailyPostCountRequest);
-    }
-
-    public Page<?> findAllByMemberId(Pageable pageRequest, PostQueryDto postQueryDto) {
-        return postRepository.findAllByMemberId(pageRequest, postQueryDto);
     }
 
     public PageCursor<?> getPosts(Long memberId, CursorRequest cursorRequest) {
@@ -63,6 +71,10 @@ public class PostReadService {
                 .mapToLong(Post::getId)
                 .min()
                 .orElse(CursorRequest.NONE_KEY);
+    }
+
+    private PostDto toDto(Post post) {
+        return new PostDto(post.getId(), post.getMemberId(), post.getContents(), postLikeRepository.count(post.getId()), post.getVersion(), post.getCreatedDate(), post.getCreatedAt());
     }
 
 }

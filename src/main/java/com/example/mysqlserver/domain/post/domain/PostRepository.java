@@ -1,9 +1,9 @@
 package com.example.mysqlserver.domain.post.domain;
 
-import com.example.mysqlserver.util.PageHelper;
 import com.example.mysqlserver.domain.post.dto.DailyPostCountRequest;
 import com.example.mysqlserver.domain.post.dto.DailyPostCountResponse;
 import com.example.mysqlserver.domain.post.ui.PostQueryDto;
+import com.example.mysqlserver.util.PageHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -19,10 +19,13 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Repository
 public class PostRepository {
+
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private static final String TABLE = "Post";
 
@@ -30,6 +33,8 @@ public class PostRepository {
             .id(rs.getLong("id"))
             .memberId(rs.getLong("memberId"))
             .contents(rs.getString("contents"))
+            .likeCount(rs.getLong("likeCount"))
+            .version(rs.getLong("version"))
             .createdDate(rs.getObject("createdDate", LocalDate.class))
             .createdAt(rs.getObject("createdAt", LocalDateTime.class))
             .build());
@@ -37,13 +42,11 @@ public class PostRepository {
     private static final RowMapper<DailyPostCountResponse> DAILY_POST_COUNT_MAPPER = (rs, rowNum) ->
             new DailyPostCountResponse(rs.getLong("memberId"), rs.getObject("createdDate", LocalDate.class), rs.getLong("count"));
 
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
     public Post save(Post post) {
         if (post.getId() == null) {
             return insert(post);
         }
-        throw new UnsupportedOperationException("갱신을 지원하지 않습니다.");
+        return update(post);
     }
 
     private Post insert(Post post) {
@@ -71,6 +74,17 @@ public class PostRepository {
                 .map(BeanPropertySqlParameterSource::new)
                 .toArray(SqlParameterSource[]::new);
         namedParameterJdbcTemplate.batchUpdate(sql, params);
+    }
+
+    public Optional<Post> findById(Long id, boolean isLock) {
+        /* DB 종속적 -> PESSIMISTIC_WRITE */
+        var sql = String.format("SELECT * FROM %s WHERE id = :id", TABLE);
+        if(isLock) {
+            sql += "FOR UPDATE";
+        }
+        var param = new MapSqlParameterSource().addValue("id", id);
+        var member = namedParameterJdbcTemplate.queryForObject(sql, param, ROW_MAPPER);
+        return Optional.ofNullable(member);
     }
 
     public List<Post> findAllByIdIn(List<Long> ids) {
@@ -192,6 +206,16 @@ public class PostRepository {
                 """, TABLE);
         var params = new BeanPropertySqlParameterSource(dailyPostCountRequest);
         return namedParameterJdbcTemplate.query(sql, params, DAILY_POST_COUNT_MAPPER);
+    }
+
+    public Post update(Post post) {
+        var sql = String.format("UPDATE %s set memberId = :memberId, contents = :contents, likeCount = :likeCount, createdDate = :createdDate, createdAt = :createdAt, version = :version + 1 WHERE id = :id and version = :version", TABLE);
+        SqlParameterSource sqlParameterSource = new BeanPropertySqlParameterSource(post);
+        int updatedCount = namedParameterJdbcTemplate.update(sql, sqlParameterSource);
+        if (updatedCount == 0) {
+            throw new RuntimeException("Update failed");
+        }
+        return post;
     }
 
 }
